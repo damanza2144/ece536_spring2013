@@ -9,11 +9,11 @@ body {
 }
 
 #map_canvas {
-	height: 500px;
+	height: 600px;
 	width: 400px
 }
 
 #map_canvas_hybrid {
-	height: 650px;
+	height: 600px;
 	width: 400px
 }

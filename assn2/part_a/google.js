@@ -17,8 +17,7 @@ function initialize() {
 	var myMidLatLong = new google.maps.LatLng( 37.5813545, -105.83361835 );
 
 	var myOptionsGoogle = {
-		zoom: 7,
-		//center: myMidLatLong,
+		zoom: 6,
 		center: myLatlngRioChama,
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	}
@@ -67,34 +66,11 @@ function initialize() {
 				map: mapGoogle,
 				title: 'My Home - Rio Chama'
 	});
-/*
-	var markerAbq = new google.maps.Marker({
-				position: myLatlngAbq,
-				map: mapGoogle,
-				title: 'Albuquerque, NM'
-	});
 
-	var markerRioSenda = new google.maps.Marker({
-				position: myLatlngRioSenda,
-				map: mapGoogle,
-				title: 'My Home - Rio Senda'
-	});
-
-	var markerDenver = new google.maps.Marker({
-				position: myLatlngDenver,
-				map: mapGoogle,
-				title: 'My Favorite Place - Denver'
-	});
-*/
 	google.maps.event.addListener( markerRioChama, 'click', function() { infowindowRioChama.open( mapGoogle, markerRioChama ); });
-/*
-	google.maps.event.addListener( markerAbq, 'click', function() { infowindowAbq.open( mapGoogle, markerAbq ); });
-	google.maps.event.addListener( markerRioSenda, 'click', function() { infowindowRioSenda.open( mapGoogle, markerRioSenda ); });
-	google.maps.event.addListener( markerDenver, 'click', function() { infowindowDenver.open( mapGoogle, markerDenver ); });
-*/
 
 	var myOptionsHybrid = {
-			zoom: 7,
+			zoom: 6,
 			center: myMidLatLong,
 			mapTypeId: google.maps.MapTypeId.HYBRID
 	}

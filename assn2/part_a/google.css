@@ -8,12 +8,7 @@ body {
 	padding: 0px
 }
 
-#map_canvas {
-	height: 600px;
-	width: 400px
-}
-
-#map_canvas_hybrid {
+.map {
 	height: 600px;
 	width: 400px
 }

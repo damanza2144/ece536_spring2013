@@ -11,11 +11,15 @@
 #include <unistd.h>
 #include <math.h>
 
-
+struct thread_data {
+	int i;
+	int b;
+	long thread_id;
+};
 
 // given A and B (both N x N), compute  X = A x B.            
 int N;  	// matrix size
-int M;  	// number of threads, must >=1
+int M = 1;  	// number of threads, must >=1
 int vFlag;
 
 double *matA;
@@ -35,43 +39,7 @@ pthread_mutex_t	CountLock	= PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t	NextIter	= PTHREAD_COND_INITIALIZER;
 
 
-
-void *printThread( void *threadID ) {
-
-	long lThreadID = (long) threadID;
-	
-	int startIndex = (lThreadID * N) / M;
-	int endIndex = ((lThreadID + 1) * N ) / M;
-	
-	printf( "Hello World! It's me, thread #%ld! - startIndex=%d, endIndex=%d\n", lThreadID, startIndex, endIndex );
-	
-	int i;
-	int j;
-	int col;
-	
-	for( i = startIndex; i < endIndex; i++ ) {
-
-		//printf( "INNER_1: i=%d, k=%d, b=%d\n", i, k, b );
-		
-		//computer colX[i][col] 
-		for( col = 0; col < N; col++ ) {
-
-			//printf( "\tINNER_2: i=%d, col=%d\n", i, col );
-			rowX[ i ][ col ] = 0.0;
-
-			for( j = 0; j < N; j++ ) {
-
-				//printf( "\t\tINNER_3: i=%d, col=%d\n", i, col );
-				rowX[ i ][ col ] += rowA[ i ][ j ] * colB[ col ][ j ];
-				//printf( "rowX[%d][%d]=%d\n", i, col, rowX[i][col] );
-			}
-		}
-	}
-	
-	
-	pthread_exit( NULL );
-
-}
+struct thread_data thread_data_arry[ _POSIX_THREAD_THREADS_MAX ];//64
 
 
 
@@ -326,6 +294,96 @@ void CheckX( void ) {
 	}
 }
 
+//http://zhaowuluo.wordpress.com/2011/01/03/pthread-atrix-multiplication-on-unixlinux/
+void *rowMcol( void *arg ) {
+
+	
+	struct thread_data *my_data = (struct thread_data *) arg;
+	//int z = my_data->i;
+	int b = my_data->b;
+	long lThreadID = my_data->thread_id;
+
+
+	int i;
+	int j;
+	int col;
+//	int *pK = (int*) arg;
+//	int k = *pK;
+//	int b = *( pK + 1 );
+
+	//int lThreadID = *( pK + 2 );
+	//long lThreadID = (long) *( pK + 2 );
+	int startIndex = (lThreadID * N) / M;
+	int endIndex = ((lThreadID + 1) * N ) / M;
+	
+	printf( "Hello World! It's me, thread #%d! - startIndex=%d, endIndex=%d\n", lThreadID, startIndex, endIndex );
+	printf( "i=%d, b=%d, N=%d, lThreadID=%d\n", i, b, N, lThreadID );
+
+	//for( i = k; i < ( k + b ) && i < N; i++ ) {
+	//for( i = startIndex; i < ( startIndex + b ) && i < endIndex; i++ ) {
+	for( i = startIndex; i < endIndex; i++ ) {
+
+		//printf( "INNER_1: i=%d, k=%d, b=%d\n", i, k, b );
+		
+		//computer colX[i][col] 
+		for( col = 0; col < N; col++ ) {
+
+			//printf( "\tINNER_2: i=%d, col=%d\n", i, col );
+			rowX[ i ][ col ] = 0.0;
+
+			for( j = 0; j < N; j++ ) {
+
+				//printf( "\t\tINNER_3: i=%d, col=%d\n", i, col );
+				rowX[ i ][ col ] += rowA[ i ][ j ] * colB[ col ][ j ];
+				//printf( "rowX[%d][%d]=%d\n", i, col, rowX[i][col] );
+			}
+		}
+	}
+	
+	
+	//pthread_exit( NULL );
+	return 0;
+}
+/*
+void *printThread( void *threadID ) {
+
+	long lThreadID = (long) threadID;
+	
+	
+	int startIndex = (lThreadID * N) / M;
+	int endIndex = ((lThreadID + 1) * N ) / M;
+	
+	printf( "Hello World! It's me, thread #%ld! - startIndex=%d, endIndex=%d\n", lThreadID, startIndex, endIndex );
+	
+	
+	int i;
+	int j;
+	int col;
+	
+	for( i = startIndex; i < endIndex; i++ ) {
+
+		//printf( "INNER_1: i=%d, k=%d, b=%d\n", i, k, b );
+		
+		//computer colX[i][col] 
+		for( col = 0; col < N; col++ ) {
+
+			//printf( "\tINNER_2: i=%d, col=%d\n", i, col );
+			rowX[ i ][ col ] = 0.0;
+
+			for( j = 0; j < N; j++ ) {
+
+				//printf( "\t\tINNER_3: i=%d, col=%d\n", i, col );
+				rowX[ i ][ col ] += rowA[ i ][ j ] * colB[ col ][ j ];
+				//printf( "rowX[%d][%d]=%d\n", i, col, rowX[i][col] );
+			}
+		}
+	}
+	
+	
+	pthread_exit( NULL );
+
+}
+
 void *rowMcol( void *arg ) {
 
 	int i;
@@ -334,11 +392,13 @@ void *rowMcol( void *arg ) {
 	int *pK = (int*) arg;
 	int k = *pK;
 	int b = *( pK + 1 );
-
+	
+	int something = *( pK + 2 );
+	
 	double multiplier;
 
 	printf( "*rowMcol ...\n" );
-	printf( "i=%d, k=%d, b=%d, N=%d\n", i, k, b, N );
+	printf( "i=%d, k=%d, b=%d, N=%d, something=%d\n", i, k, b, N, something );
 	
 	//N=1000:	i=0, k=0, b=1000, N=1000
 	//N=1500:	i=0, k=0, b=1500, N=1500
@@ -358,6 +418,7 @@ void *rowMcol( void *arg ) {
 
 	// Actual N inner product for row k happen here.
 	//do multiple times, b 
+*/
 /*
 	for( i = k; i < ( k + b ) && i < N; i++ ) {
 
@@ -378,8 +439,9 @@ void *rowMcol( void *arg ) {
 		}
 	}
 */
+/*
 }
-
+*/
 // MAIN routine
 main( int argc, char **argv ) {
 
@@ -397,7 +459,7 @@ main( int argc, char **argv ) {
 	int i;
 	int j;
 	int temp;
-	int param[ 2 ];
+//	int param[ 3 ];
 
 	double max;
 
@@ -407,10 +469,41 @@ main( int argc, char **argv ) {
 	printf( "Starting timing ... computing ...\n" );
 	clkStart = times( &tStart );
 
-	param[ 0 ] = 0;
-	param[ 1 ] = N;
-	rowMcol( param );
+//	param[ 0 ] = 0;
+//	param[ 1 ] = N;
+//	param[ 2 ] = 0;
 
+
+	long threadCounter;
+	for( threadCounter = 0; threadCounter < M; threadCounter++ ) {
+	
+		thread_data_arry[ threadCounter ].i = 0;
+		thread_data_arry[ threadCounter ].b = N;
+		thread_data_arry[ threadCounter ].thread_id = threadCounter;
+		
+		//param[ 2 ] = threadCounter;
+		//param[ 2 ] = (int) threadCounter;
+		printf( "main: creating thread %ld\n", threadCounter );
+		
+		int threadReturnCode = pthread_create( &idThreads[ threadCounter ], NULL, rowMcol, (void *) &thread_data_arry[ threadCounter ]);
+		//int threadReturnCode = pthread_create( &idThreads[ threadCounter ], NULL, rowMcol, (void *) param );
+		
+		if( threadReturnCode ) {
+		
+			printf( "ERROR; return code from pthread_create() is %d\n", threadReturnCode );
+			
+			exit( -1 );
+		}
+	}
+
+	//rowMcol( param );
+	printf( "completed threads, going to try to join all remaining threads!\n" );
+	
+	for( threadCounter = 0; threadCounter < M; threadCounter++ ) {
+		pthread_join( idThreads[ threadCounter ], NULL );
+	}
+
+	printf( "joined all threads!\n" );
 	clkStop = times( &tStop );
 	printf( "Stopped timing.\n" );
 
@@ -426,10 +519,9 @@ main( int argc, char **argv ) {
 
 	printf( "Elapsed time = %g ms.\n",  (float)( clkStop - clkStart ) / (float) sysconf( _SC_CLK_TCK ) * 1000 );
 	printf( "The total CPU time comsumed = %g ms.\n", (float)(( tStop.tms_utime - tStart.tms_utime ) + ( tStop.tms_stime - tStart.tms_stime )) / (float)sysconf( _SC_CLK_TCK ) * 1000 );
-	
-	if( M > 0 ) {
-	
-		/* Last thing that you should do */
-		pthread_exit( NULL );
-	}
+
+	/* Last thing that main() should do */
+	pthread_exit(NULL);
+
+	return 0;
 }

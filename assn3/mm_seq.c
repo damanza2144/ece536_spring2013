@@ -7,8 +7,11 @@
 #include <sys/times.h>
 #include <limits.h>
 #include <pthread.h>
+//#include <sys/error.h>
 #include <unistd.h>
 #include <math.h>
+
+
 
 // given A and B (both N x N), compute  X = A x B.            
 int N;  	// matrix size
@@ -26,10 +29,53 @@ double **rowX;
 #define MAXN4print	20		// safety, not to overload ECE server
 
 // thread information
-pthread_t		idThreads[ _POSIX_THREAD_THREADS_MAX ];
+pthread_t		idThreads[ _POSIX_THREAD_THREADS_MAX ];		//64
 pthread_mutex_t	Mutex		= PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t	CountLock	= PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t	NextIter	= PTHREAD_COND_INITIALIZER;
+
+
+
+void *printThread( void *threadID ) {
+
+	long lThreadID = (long) threadID;
+	
+	int startIndex = (lThreadID * N) / M;
+	int endIndex = ((lThreadID + 1) * N ) / M;
+	
+	printf( "Hello World! It's me, thread #%ld! - startIndex=%d, endIndex=%d\n", lThreadID, startIndex, endIndex );
+	
+	int i;
+	int j;
+	int col;
+	
+	for( i = startIndex; i < endIndex; i++ ) {
+
+		//printf( "INNER_1: i=%d, k=%d, b=%d\n", i, k, b );
+		
+		//computer colX[i][col] 
+		for( col = 0; col < N; col++ ) {
+
+			//printf( "\tINNER_2: i=%d, col=%d\n", i, col );
+			rowX[ i ][ col ] = 0.0;
+
+			for( j = 0; j < N; j++ ) {
+
+				//printf( "\t\tINNER_3: i=%d, col=%d\n", i, col );
+				rowX[ i ][ col ] += rowA[ i ][ j ] * colB[ col ][ j ];
+				//printf( "rowX[%d][%d]=%d\n", i, col, rowX[i][col] );
+			}
+		}
+	}
+	
+	
+	pthread_exit( NULL );
+
+}
+
+
+
+
 
 void GetParam( int argc, char **argv ) {
 
@@ -294,26 +340,50 @@ void *rowMcol( void *arg ) {
 	printf( "*rowMcol ...\n" );
 	printf( "i=%d, k=%d, b=%d, N=%d\n", i, k, b, N );
 	
+	//N=1000:	i=0, k=0, b=1000, N=1000
+	//N=1500:	i=0, k=0, b=1500, N=1500
+	
+	long threadCounter;
+	for( threadCounter = 0; threadCounter < M; threadCounter++ ) {
+	
+		printf( "*rowMcol: creating thread %ld\n", threadCounter );
+		int threadReturnCode = pthread_create( &idThreads[ threadCounter ], NULL, printThread, (void *) threadCounter );
+		
+		if( threadReturnCode ) {
+		
+			printf( "ERROR; return code from pthread_create() is %d\n", threadReturnCode );
+			exit( -1 );
+		}
+	}
+
 	// Actual N inner product for row k happen here.
 	//do multiple times, b 
+/*
 	for( i = k; i < ( k + b ) && i < N; i++ ) {
 
+		//printf( "INNER_1: i=%d, k=%d, b=%d\n", i, k, b );
+		
 		//computer colX[i][col] 
 		for( col = 0; col < N; col++ ) {
 
+			//printf( "\tINNER_2: i=%d, col=%d\n", i, col );
 			rowX[ i ][ col ] = 0.0;
 
 			for( j = 0; j < N; j++ ) {
 
+				//printf( "\t\tINNER_3: i=%d, col=%d\n", i, col );
 				rowX[ i ][ col ] += rowA[ i ][ j ] * colB[ col ][ j ];
 				//printf( "rowX[%d][%d]=%d\n", i, col, rowX[i][col] );
 			}
 		}
 	}
+*/
 }
 
 // MAIN routine
 main( int argc, char **argv ) {
+
+	//printf( "_POSIX_THREAD_THREADS_MAX=%d", _POSIX_THREAD_THREADS_MAX );
 
 	//Elapsed times using <times()>
 	clock_t clkStart;
@@ -356,4 +426,10 @@ main( int argc, char **argv ) {
 
 	printf( "Elapsed time = %g ms.\n",  (float)( clkStop - clkStart ) / (float) sysconf( _SC_CLK_TCK ) * 1000 );
 	printf( "The total CPU time comsumed = %g ms.\n", (float)(( tStop.tms_utime - tStart.tms_utime ) + ( tStop.tms_stime - tStart.tms_stime )) / (float)sysconf( _SC_CLK_TCK ) * 1000 );
+	
+	if( M > 0 ) {
+	
+		/* Last thing that you should do */
+		pthread_exit( NULL );
+	}
 }

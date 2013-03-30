@@ -1,60 +1,58 @@
 #!/usr/bin/env python
 
-from operator import itemgetter 
 import sys
 
-def my_fun( current_word, current_count ):
-
-	itest = len( current_word )
-	if itest > 9 and itest < 20:
-
-		stest = int( itest )
-		# write result to STDOUT
-		print '%s\t%s\t%s' % ( stest, current_word, current_count )
-
-	return
 
 current_word	= None
 current_count	= 0
 word			= None
 
-# input comes from STDIN
+current_nowords	= 0
+
+# input comes from STDIN (standard input)
 for line in sys.stdin:
 
 	# remove leading and trailing whitespace
 	line = line.strip()
 
-	# parse the input we got from mapper.py
-	word, count = line.split( '\t', 1 )
+	# parse the input we got from reducer.py
+	nowords, word, count = line.split( '\t', 2 )
+	
+	#print '%s\t%s\t%s' % ( nowords, word, count )
 
-	# convert count (currently a string) to int
+
+	# convert nowords (currently a string) to int
 	try:
 
-		count = int( count )
+		nowords = int( nowords )
 
 	except ValueError:
 
-		# count was not a number, so silently
+		# nowords was not a number, so silently
 		# ignore/discard this line
 		continue
 
-	# this IF-switch only works because Hadoop sorts map output
-	# by key (here: word) before it is passed to the reducer
-	if current_word == word:
+	if nowords == current_nowords:
+		
+		if count > current_count:
 
-		current_count += count
+			#print '%s\t%s\t%s' % ( current_nowords, current_word, current_count )
+			current_count	= count
+			current_nowords	= nowords
+			current_word	= word
 
-	else:
+	elif nowords > current_nowords:
 
 		if current_word:
 
-			my_fun( current_word, current_count )
+			print '%s\t%s\t%s' % ( current_nowords, current_word, current_count )
 
-		current_count = count
-		current_word = word
+		current_count	= count
+		current_nowords	= nowords
+		current_word	= word
 
-# do not forget to output the last word if needed!
-if current_word == word:
+	#print 'TST---%s\t%s\t%s' % ( nowords, word, count )
 
-	my_fun( current_word, current_count )
+#print 'FNL---%s\t%s\t%s' % ( current_nowords, current_word, current_count )
+print '%s\t%s\t%s' % ( current_nowords, current_word, current_count )
 

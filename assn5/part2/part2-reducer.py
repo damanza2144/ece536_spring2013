@@ -3,6 +3,17 @@
 from operator import itemgetter 
 import sys
 
+def my_fun( current_word, current_count ):
+
+	itest = len( current_word )
+	if itest > 9 and itest < 20:
+
+		stest = int( itest )
+		# write result to STDOUT
+		print '%s\t%s\t%s' % ( stest, current_word, current_count )
+
+	return
+
 current_word	= None
 current_count	= 0
 word			= None
@@ -37,12 +48,7 @@ for line in sys.stdin:
 
 		if current_word:
 
-			itest = len( current_word )
-			if itest > 9 and itest < 20:
-
-				stest = int( itest )
-				# write result to STDOUT
-				print '%s\t%s\t%s' % ( stest, current_word, current_count )
+			my_fun( current_word, current_count )
 
 		current_count = count
 		current_word = word
@@ -50,9 +56,5 @@ for line in sys.stdin:
 # do not forget to output the last word if needed!
 if current_word == word:
 
-	itest = len( current_word )
-	if itest > 9 and itest < 20:
-
-		stest = int( itest )
-		print '%s\t%s\t%s' % ( stest, current_word, current_count )
+	my_fun( current_word, current_count )
 

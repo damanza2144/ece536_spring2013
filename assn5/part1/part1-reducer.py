@@ -47,3 +47,4 @@ for line in sys.stdin:
 if current_word == word:
 
 	print '%s\t%s' % ( current_word, current_count )
+

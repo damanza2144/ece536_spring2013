@@ -2,7 +2,6 @@
 
 import sys
 
-
 current_word	= None
 current_count	= 0
 word			= None
@@ -18,9 +17,6 @@ for line in sys.stdin:
 	# parse the input we got from reducer.py
 	nowords, word, count = line.split( '\t', 2 )
 	
-	#print '%s\t%s\t%s' % ( nowords, word, count )
-
-
 	# convert nowords (currently a string) to int
 	try:
 
@@ -33,10 +29,9 @@ for line in sys.stdin:
 		continue
 
 	if nowords == current_nowords:
-		
+
 		if count > current_count:
 
-			#print '%s\t%s\t%s' % ( current_nowords, current_word, current_count )
 			current_count	= count
 			current_nowords	= nowords
 			current_word	= word
@@ -51,8 +46,5 @@ for line in sys.stdin:
 		current_nowords	= nowords
 		current_word	= word
 
-	#print 'TST---%s\t%s\t%s' % ( nowords, word, count )
-
-#print 'FNL---%s\t%s\t%s' % ( current_nowords, current_word, current_count )
 print '%s\t%s\t%s' % ( current_nowords, current_word, current_count )
 

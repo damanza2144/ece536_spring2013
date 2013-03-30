@@ -37,8 +37,12 @@ for line in sys.stdin:
 
 		if current_word:
 
-			# write result to STDOUT
-			print '%s\t%s' % ( current_word, current_count )
+			itest = len( current_word )
+			if itest > 9 and itest < 21:
+
+				stest = int( itest )
+				# write result to STDOUT
+				print '%s\t%s\t%s' % ( stest, current_word, current_count )
 
 		current_count = count
 		current_word = word
@@ -46,5 +50,9 @@ for line in sys.stdin:
 # do not forget to output the last word if needed!
 if current_word == word:
 
-	print '%s\t%s' % ( current_word, current_count )
+	itest = len( current_word )
+	if itest > 9 and itest < 21:
+
+		stest = int( itest )
+		print '%s\t%s\t%s' % ( stest, current_word, current_count )
 

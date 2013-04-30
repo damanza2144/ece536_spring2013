@@ -17,30 +17,30 @@
 
 import sys
 import string
+#import argparse
+from optparse import OptionParser
 
 row_counter = 0
 
-# input comes from STDIN (standard input)
-for line in sys.stdin:
+#parser = argparse.ArgumentParser(description='Process matrix multiplication')
+#parser.add_argument('-m', help='M matrix')
+#parser.add_argument('-n', help='N matrix')
+#args = parser.parse_args()
 
-        # remove leading and trailing whitespace
-        line = line.strip()
+parser = OptionParser()
+parser.add_option('-m', action='store', dest='mfile', help='M matrix', metavar='FILE')
+parser.add_option('-n', action='store', dest='nfile', help='N matrix', metavar='FILE')
+(options, args) = parser.parse_args()
+#print '%s\t%s' % (options, args)
 
-        # split the line into columns
-        columns = line.split()
+print 'M matrix:'
+for line in open(options.mfile):
+	print '%s' % (line)
 
-		column_counter = 0
+print 'N matrix:'
+for line in open(options.nfile):
+	print '%s' % (line)
 
-        # increase counters
-        for column in columns:
 
-			if column:
 
-				#print '%s\t%s' % (column, 1)
-				#print '(%s, %s), (%s, %s, %s)' % (row_counter, column_counter, ..)
-				print '(%s, %s), ()' % (row_counter, column_counter)
-
-			column_counter += 1
-
-		row_counter += 1
 

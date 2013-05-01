@@ -35,6 +35,7 @@ no_mmatrix_rows = 0
 no_nmatrix_cols = 0
 no_nmatrix_rows = 0
 
+# create lists for the M and N matrices
 mmatrix_list = list()
 nmatrix_list = list()
 
@@ -82,17 +83,15 @@ for line in sys.stdin:
 
 		for matrix_column in matrix_columns:
 
-			# process the M matrix
 			if is_m == 1:
 
+				# process the M matrix, just append to the M matrix list
 				mmatrix_list.append(matrix_column)
-				#print '(%s, %s), (M, )' % (row_counter, column_counter)
 
-			# process the N matrix
 			if is_m == 0:
 
+				# process the N matrix, just append to the N matrix list
 				nmatrix_list.append(matrix_column)
-				#print '(%s, %s), (N, )' % (row_counter, column_counter)
 
 			column_counter += 1
 

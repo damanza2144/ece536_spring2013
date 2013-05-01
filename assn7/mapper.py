@@ -1,46 +1,50 @@
 #!/usr/bin/env python
 
-#############################################
-# definitions:
-#	M is a matrix with element mij in row i and column j
-#	N is a matrix with element njk in row j and column k
-#	P is a matrix = MN with element pik in row i and column k, where pik = sum( mij * njk )
-#
-# map algorithm:
-#	For each element mij of M, emit a key-value pair (i, k), (M, j, mij) for k=1,2,... number of columns of N.
-#	For each element njk of N, emit a key-value pair (i, k), (N, j, njk) for i=1,2,... number of columns of M.
-#
-# reduce algorithm:
-#	For each key (i, k), emit the key-value pair (i, k), pik where pik = sum( mij * njk )
-#
-#############################################
-
 import sys
 import string
-#import argparse
-from optparse import OptionParser
 
+is_m = -1
 row_counter = 0
+column_counter = 0
 
-#parser = argparse.ArgumentParser(description='Process matrix multiplication')
-#parser.add_argument('-m', help='M matrix')
-#parser.add_argument('-n', help='N matrix')
-#args = parser.parse_args()
+# input comes from STDIN (standard input)
+for line in sys.stdin:
 
-parser = OptionParser()
-parser.add_option('-m', action='store', dest='mfile', help='M matrix', metavar='FILE')
-parser.add_option('-n', action='store', dest='nfile', help='N matrix', metavar='FILE')
-(options, args) = parser.parse_args()
-#print '%s\t%s' % (options, args)
+	# remove leading and trailing whitespace
+	line = line.strip()
 
-print 'M matrix:'
-for line in open(options.mfile):
-	print '%s' % (line)
+	if line == 'M:':
 
-print 'N matrix:'
-for line in open(options.nfile):
-	print '%s' % (line)
+		print 'start processing m matrix now'
+		is_m = 1
+		row_counter = 0
+		continue
+	
+	if line == 'N:':
 
+		print 'start processing n matrix now'
+		is_m = 0
+		row_counter = 0
+		continue
 
+	# split the line into columns
+	matrix_columns = line.split()
+	column_counter = 0
+
+	for matrix_column in matrix_columns:
+	
+		# process the M matrix
+		if is_m == 1:
+
+			print 'M: (%s, %s), ()' % (row_counter, column_counter)
+
+		# process the N matrix
+		if is_m == 0:
+
+			print 'N: (%s, %s), ()' % (row_counter, column_counter)
+
+		column_counter += 1
+
+	row_counter += 1
 
 

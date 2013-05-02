@@ -41,11 +41,14 @@ matrix_value = 0.0
 
 
 
-mmatrix_list = list()
-nmatrix_list = list()
-pmatrix_list = list()
+mmatrix_list = []
+nmatrix_list = []
+pmatrix_list = []
 
+interim_list = []
+prev_counter = 0
 
+was_m = -1
 
 # input comes from STDIN
 for line in sys.stdin:
@@ -64,7 +67,7 @@ for line in sys.stdin:
 		d = clean_string(d)
 		e = clean_string(e)
 
-		print '%s' % (line)
+		#print '%s' % (line)
 		if c == 'M':
 
 			#(row i, number of columns of N), (M, column j, value at row i and column j)
@@ -74,9 +77,24 @@ for line in sys.stdin:
 			matrix_value = float(e)
 
 			#print 'processing m matrix here'
-			print 'M: no_ncols=%s, row_counter=%s, col_counter=%s, matrix_value=%s' % (no_ncols, row_counter, col_counter, matrix_value)
+			#print 'M: no_ncols=%s, row_counter=%s, col_counter=%s, matrix_value=%s' % (no_ncols, row_counter, col_counter, matrix_value)
+
+			if row_counter > prev_counter:
+
+				mmatrix_list.append( interim_list )
+				interim_list = []
+
+			interim_list.append( matrix_value )
+
+			prev_counter = row_counter
+			was_m = 1
 
 		if c == 'N':
+
+			if was_m == 1:
+
+				mmatrix_list.append( interim_list )
+				interim_list = []
 
 			#(number of columns of M, column k), (N, row j, value at row j and column k)
 			no_mcols = int(a)
@@ -85,8 +103,25 @@ for line in sys.stdin:
 			matrix_value = float(e)
 
 			#print 'processing n matrix here'
-			print 'N: no_mcols=%s, row_counter=%s, col_counter=%s, matrix_value=%s' % (no_mcols, row_counter, col_counter, matrix_value)
+			#print 'N: no_mcols=%s, row_counter=%s, col_counter=%s, matrix_value=%s' % (no_mcols, row_counter, col_counter, matrix_value)
+			
+			if col_counter > prev_counter:
 
-		#print '%s' % (line)
-		#print 'a=%s, b=%s, c=%s, d=%s, e=%s' % (a, b, c, d, e)
+				# do a multiply and add to get a pik???
+				print 'ncol_vector_%s=%s' % (prev_counter, interim_list)
+				interim_list = []
+
+			interim_list.append( matrix_value )
+			prev_counter = col_counter
+			was_m = 0
+
+if was_m == 0:
+
+	# do a multiply and add to get a pik???
+	print 'ncol_vector_%s=%s' % (prev_counter, interim_list)
+
+#print 'mmatrix_list=%s' % (mmatrix_list)
+#for matrix_column in mmatrix_list:
+#	print 'matrix_column=%s' % (matrix_column)
+
 

@@ -8,9 +8,9 @@
 #
 # map algorithm:
 #	For each element mij of M, emit a key-value pair (i, k), (M, j, mij) for k=1,2,... number of columns of N.
-#												(row i, number of columns of N), (M, column j, value at row i and column j)
+#							(row i, number of columns of N), (M, column j, value at row i and column j)
 #	For each element njk of N, emit a key-value pair (i, k), (N, j, njk) for i=1,2,... number of columns of M.
-#												(number of columns of M, column k), (N, row j, value at row j and column k)
+#							(number of columns of M, column k), (N, row j, value at row j and column k)
 #
 # reduce algorithm:
 #	For each key (i, k), emit the key-value pair (i, k), pik where pik = sumj( mij * njk )
@@ -18,7 +18,6 @@
 #############################################
 
 import sys
-#import string
 
 # this will signify if we are processing an M (set to 1) or an N (set to 0) matrix
 is_m = -1
@@ -137,5 +136,4 @@ for matrix_column in nmatrix_list:
 	else:
 
 		column_counter += 1
-
 

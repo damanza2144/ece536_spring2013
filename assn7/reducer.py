@@ -28,11 +28,22 @@ def clean_string( current_word ):
 	return current_word
 
 mmatrix_list = []
-#nmatrix_list = []
 pmatrix_list = []
 no_mcols = 0
 
-def process_mult_add2( ncol_vector ):
+def transpose_col_vector( col_vector ):
+
+	transposed = []
+	for i in range(no_mcols):
+		# the following 3 lines implement the nested listcomp
+		transposed_row = []
+		for row in col_vector:
+			transposed_row.append(row[i])
+		transposed.append(transposed_row)
+	print 'transposed=%s' % (transposed)
+
+def process_mult_add( ncol_vector ):
+
 	#print 'ncol_vector=%s' % (ncol_vector)
 	#assuming that the number of M columns = number of N rows
 	pcol_vector = []
@@ -47,44 +58,14 @@ def process_mult_add2( ncol_vector ):
 		print 'sum=%s' % sum
 		pcol_vector.append( sum )
 	print 'pcol_vector=%s' % (pcol_vector)
-
-def process_mult_add( ncol_vector ):
-
-	tmp_counter = no_mcols - 1
-	row_counter = 0
-
-	for mmatrix_row in mmatrix_list:
-
-		column_counter = 0
-
-		for mmatrix_element in mmatrix_row:
-
-			sum = 0.0
-			interim_list = []
-			for ncol_element in ncol_vector:
-
-				prod = mmatrix_element * ncol_element
-				sum += mmatrix_element * ncol_element
-				print 'mmatrix_element=%s, ncol_element=%s, prod=%s, sum=%s' % (mmatrix_element, ncol_element, prod, sum)
-				interim_list.append( sum )
-				
-			#if tmp_counter == column_counter:
-			#	print 'interim_list=%s' % (interim_list)
-			#	pmatrix_list.append( interim_list )
-			#	interim_list = []
-
-			print 'interim_list=%s' % (interim_list)
-			pmatrix_list.append( interim_list )
-			column_counter += 1
-		
-		row_counter += 1
-
+	
+	#transpose_col_vector( pcol_vector )
+	#transposed = []
+	#for i in range(no_mcols):
+	#	transposed.append([row[i] for row in pcol_vector])
+	#print 'transposed=%s' % (transposed)
 
 no_ncols = 0
-
-
-#no_nrows = 0
-#no_mrows = 0
 
 row_counter = 0
 col_counter = 0
@@ -154,7 +135,7 @@ for line in sys.stdin:
 			if col_counter > prev_counter:
 
 				# do a multiply and add to get a pik???
-				process_mult_add2( interim_list )
+				process_mult_add( interim_list )
 				
 				#print 'ncol_vector_%s=%s' % (prev_counter, interim_list)
 				interim_list = []
@@ -166,7 +147,7 @@ for line in sys.stdin:
 if was_m == 0:
 
 	# do a multiply and add to get a pik???
-	process_mult_add2( interim_list )
+	process_mult_add( interim_list )
 	#print 'ncol_vector_%s=%s' % (prev_counter, interim_list)
 
 print 'pmatrix_list=%s' % (pmatrix_list)

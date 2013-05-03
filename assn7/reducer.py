@@ -35,40 +35,47 @@ no_mrows = 0
 no_ncols = 0
 
 def init_pmatrix( no_mrows, no_ncols ):
-	print 'no_mrows=%s, no_ncols=%s' % (no_mrows, no_ncols)
+
+	#print 'no_mrows=%s, no_ncols=%s' % (no_mrows, no_ncols)
 	for i in range( no_mrows ):
+
 		interim_list = []
 		for j in range( no_ncols ):
+			
 			interim_list.append(0)
+
 		pmatrix_list.append(interim_list)
 
 def assign_col_vector( col_num, col_vector ):
+
 	counter = 0
+
 	for col_element in col_vector:
+
 		pmatrix_list[counter][col_num] = col_element
 		counter += 1
 
 def process_mult_add( col_num, ncol_vector ):
+
 	#print 'ncol_vector=%s' % (ncol_vector)
-	#assuming that the number of M columns = number of N rows
+	# I am assuming that the number of M columns = number of N rows
 	pcol_vector = []
 	for mmatrix_row in mmatrix_list:
+
 		counter = 0
 		sum = 0.0
+
 		for mmatrix_element in mmatrix_row:
+
 			#print 'counter=%s' % counter
 			sum += mmatrix_element * ncol_vector[ counter ]
 			counter += 1
-		print 'sum=%s' % sum
-		pcol_vector.append( sum )
-	print 'col_num=%s, pcol_vector=%s' % (col_num, pcol_vector)
-	assign_col_vector( col_num, pcol_vector )
-	#transpose_col_vector( pcol_vector )
-	#transposed = []
-	#for i in range(no_mcols):
-	#	transposed.append([row[i] for row in pcol_vector])
-	#print 'transposed=%s' % (transposed)
 
+		#print 'sum=%s' % sum
+		pcol_vector.append( sum )
+
+	#print 'col_num=%s, pcol_vector=%s' % (col_num, pcol_vector)
+	assign_col_vector( col_num, pcol_vector )
 
 row_counter = 0
 col_counter = 0
@@ -139,7 +146,7 @@ for line in sys.stdin:
 			
 			if col_counter > prev_counter:
 
-				# do a multiply and add to get a pik???
+				# do a multiply and add to get a pik
 				process_mult_add( prev_counter, interim_list )
 				
 				#print 'ncol_vector_%s=%s' % (prev_counter, interim_list)
@@ -151,13 +158,11 @@ for line in sys.stdin:
 
 if was_m == 0:
 
-	# do a multiply and add to get a pik???
+	# do a multiply and add to get a pik
 	process_mult_add( prev_counter, interim_list )
 	#print 'ncol_vector_%s=%s' % (prev_counter, interim_list)
 
-print 'pmatrix_list=%s' % (pmatrix_list)
-#for matrix_column in mmatrix_list:
-#	print 'matrix_column=%s' % (matrix_column)
-
+#print 'pmatrix_list=%s' % (pmatrix_list)
+print 'result = %s' % (pmatrix_list)
 
 

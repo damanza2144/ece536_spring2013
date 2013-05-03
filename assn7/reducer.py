@@ -19,6 +19,7 @@
 
 import sys
 
+# This function cleans the input string into this file.
 def clean_string( current_word ):
 
 	current_word = current_word.strip()
@@ -34,6 +35,10 @@ no_mcols = 0
 no_mrows = 0	
 no_ncols = 0
 
+# Initialize the pmatrix_list to be a multi-dimensional list (like an array)
+# with the number of rows equal to the number of rows of matrix M and the 
+# number of colums equal to the number of columns of matrix N.  Set all values
+# to an initial value of 0.
 def init_pmatrix( no_mrows, no_ncols ):
 
 	#print 'no_mrows=%s, no_ncols=%s' % (no_mrows, no_ncols)
@@ -46,6 +51,11 @@ def init_pmatrix( no_mrows, no_ncols ):
 
 		pmatrix_list.append(interim_list)
 
+# Assign the resultant column vector from the multiplication/addition 
+# to the columns in the pmatrix_list.  So the idea here is that the 
+# column_vector will be a "vector" or a list with values that should 
+# be inserted into a column_number in the pmatrix_list, which is the 
+# resultant matrix.
 def assign_col_vector( col_num, col_vector ):
 
 	counter = 0
@@ -55,10 +65,18 @@ def assign_col_vector( col_num, col_vector ):
 		pmatrix_list[counter][col_num] = col_element
 		counter += 1
 
+# This procedure processes the multiplication and addition of the 
+# matrix's N column vector and the mmatrix_list (M matrix).  At the
+# end, it calls the previous function to assign the resultant column
+# vector the the P resultant matrix.
 def process_mult_add( col_num, ncol_vector ):
 
 	#print 'ncol_vector=%s' % (ncol_vector)
-	# I am assuming that the number of M columns = number of N rows
+
+	# At this point, I am assuming that the number of M columns 
+	# is equal to the number of N rows.  The check should have 
+	# already happened.
+
 	pcol_vector = []
 	for mmatrix_row in mmatrix_list:
 
@@ -79,12 +97,9 @@ def process_mult_add( col_num, ncol_vector ):
 
 row_counter = 0
 col_counter = 0
-
 matrix_value = 0.0
-
 interim_list = []
 prev_counter = 0
-
 was_m = -1
 
 # input comes from STDIN
@@ -95,7 +110,8 @@ for line in sys.stdin:
 
 	if line:
 
-		# parse the input we got from mapper.py
+		# parse the input that is comma-delimited that we got 
+		# from mapper.py output.
 		a, b, c, d, e = line.split( ',', 4 )
 
 		a = clean_string(a)
@@ -107,7 +123,8 @@ for line in sys.stdin:
 		#print '%s' % (line)
 		if c == 'M':
 
-			#(row i, number of columns of N), (M, column j, value at row i and column j)
+			# The following input is what we need to parse:
+			#	(row i, number of columns of N), (M, column j, value at row i and column j)
 			no_ncols = int(b)
 			row_counter = int(a)
 			col_counter = int(d)
@@ -131,17 +148,19 @@ for line in sys.stdin:
 
 			if was_m == 1:
 
+				# The mapper will always output the M matrix stuff first and 
+				# then the N matrix, even if the N matrix is depicted first.
 				init_pmatrix( no_mrows, no_ncols )
 				mmatrix_list.append( interim_list )
 				interim_list = []
 
-			#(number of columns of M, column k), (N, row j, value at row j and column k)
+			# The following input is what we need to parse:
+			#	(number of columns of M, column k), (N, row j, value at row j and column k)
 			no_mcols = int(a)
 			row_counter = int(d)
 			col_counter = int(b)
 			matrix_value = float(e)
 
-			#print 'processing n matrix here'
 			#print 'N: no_mcols=%s, row_counter=%s, col_counter=%s, matrix_value=%s' % (no_mcols, row_counter, col_counter, matrix_value)
 			
 			if col_counter > prev_counter:
@@ -164,5 +183,4 @@ if was_m == 0:
 
 #print 'pmatrix_list=%s' % (pmatrix_list)
 print 'result = %s' % (pmatrix_list)
-
 
